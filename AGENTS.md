@@ -49,3 +49,17 @@ Cite only public sources. Every document, commit, issue and PR must stand on its
 - Issues first: each change starts as an issue with Problem, Behavior, Acceptance criteria, Security notes and Out of scope. Only issues labeled `approved` are built, one PR each.
 - Commits and PR titles use Conventional Commits (`feat:`, `fix:`, `docs:`, `test:`, `ci:`, `build:`, `chore:`, `refactor:`). Commits are signed.
 - Merging is the owner's decision.
+
+## Make targets
+
+`make` is the only interface. Humans, agents and CI run the same targets. It runs only binaries from `node_modules/.bin`, never `npx`. `lint`, `format`, `test` and `build` install the dependencies first when they are missing or `package-lock.json` changed, and `build` does nothing when its inputs are unchanged.
+
+| Target | Runs |
+| --- | --- |
+| `make` or `make help` | List the targets |
+| `make install` | `npm ci --ignore-scripts` from `package-lock.json` |
+| `make lint` | Biome, then `tsc --noEmit` |
+| `make format` | Biome with fixes |
+| `make test` | `node --test 'src/**/*.test.ts'` |
+| `make build` | esbuild: `src/main.ts` → `dist/index.js` |
+| `make check-dist` | `make build`, then fail if `dist/` differs from the commit |
